@@ -27,4 +27,10 @@ server.post("/tweets", (req, res) => {
 	res.send("OK");
 });
 
+server.get("/tweets", (req, res) => {
+	const lastTweets = tweets.slice(-10);
+
+	res.send(lastTweets);
+});
+
 server.listen(5000);
