@@ -7,9 +7,15 @@ server.use(cors());
 
 const users = [];
 const tweets = [];
+const posts = [];
 
 server.post("/sign-up", (req, res) => {
 	const user = req.body;
+	const { username, avatar } = req.body;
+
+	if (!username || !avatar) {
+		return res.sendStatus(400);
+	}
 
 	users.push(user);
 
@@ -18,17 +24,17 @@ server.post("/sign-up", (req, res) => {
 
 server.post("/tweets", (req, res) => {
 	const tweet = req.body;
-	const picture = users.find((value) => value.username === tweet.username);
-	const avatar = picture.avatar;
-
-	tweet.avatar = avatar;
 	tweets.push(tweet);
+
+	const picture = users.find((value) => value.username === tweet.username);
+	tweet.avatar = picture.avatar;
+	posts.push(tweet);
 
 	res.send("OK");
 });
 
 server.get("/tweets", (req, res) => {
-	const lastTweets = tweets.slice(-10);
+	const lastTweets = posts.slice(-10);
 
 	res.send(lastTweets);
 });
