@@ -10,25 +10,29 @@ const tweets = [];
 const posts = [];
 
 server.post("/sign-up", (req, res) => {
-	const user = req.body;
 	const { username, avatar } = req.body;
 
 	if (!username || !avatar) {
-		return res.sendStatus(400);
+		return res.status(400).send("Todos os campos são obrigatórios!");
 	}
 
-	users.push(user);
+	users.push(req.body);
 
 	res.send("OK");
 });
 
 server.post("/tweets", (req, res) => {
-	const tweet = req.body;
-	tweets.push(tweet);
+	const { username, tweet } = req.body;
 
-	const picture = users.find((value) => value.username === tweet.username);
-	tweet.avatar = picture.avatar;
-	posts.push(tweet);
+	if (!username || !tweet) {
+		return res.status(400).send("Todos os campos são obrigatórios!");
+	}
+
+	tweets.push(req.body);
+
+	const picture = users.find((value) => value.username === username);
+	req.body.avatar = picture.avatar;
+	posts.push(req.body);
 
 	res.send("OK");
 });
