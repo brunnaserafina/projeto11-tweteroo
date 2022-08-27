@@ -18,7 +18,7 @@ server.post("/sign-up", (req, res) => {
 
 	users.push(req.body);
 
-	res.send("OK");
+	res.status(201).send("OK");
 });
 
 server.post("/tweets", (req, res) => {
@@ -34,7 +34,7 @@ server.post("/tweets", (req, res) => {
 	req.body.avatar = picture.avatar;
 	posts.push(req.body);
 
-	res.send("OK");
+	res.status(201).send("OK");
 });
 
 server.get("/tweets", (req, res) => {
