@@ -12,7 +12,11 @@ const posts = [];
 server.post("/sign-up", (req, res) => {
 	const { username, avatar } = req.body;
 
-	if (!username || !avatar) {
+	if (
+		!username ||
+		!avatar ||
+		!(avatar.startsWith("https://") || avatar.startsWith("http://"))
+	) {
 		return res.status(400).send("Todos os campos são obrigatórios!");
 	}
 
@@ -22,34 +26,49 @@ server.post("/sign-up", (req, res) => {
 });
 
 server.post("/tweets", (req, res) => {
-	const { user: username } = req.headers;
-	const { tweet } = req.body;
-	const picture = users.find((value) => value.username === username);
-	const avatar = picture.avatar;
+	const username = req.headers.user;
+	const tweet = req.body.tweet;
+	const avatar = users.find((user) => user.username === username).avatar;
 
 	if (!username || !tweet) {
 		return res.status(400).send("Todos os campos são obrigatórios!");
 	}
 
-	tweets.push({ username, tweet });
-
-	posts.push({ username, avatar, tweet });
+	tweets.unshift({ username, tweet });
+	posts.unshift({ username, avatar, tweet });
 
 	res.status(201).send("OK");
 });
 
 server.get("/tweets", (req, res) => {
-	const lastTweets = posts.slice(-10);
+	let page = Number(req.query.page);
+	const tweetsPerPage = 10;
+	const qtdPages = Math.ceil(tweets.length / tweetsPerPage);
 
-	res.send(lastTweets);
+	if (tweets.length === 0) {
+		return res.send(tweets);
+	}
+
+	if (page < 1 || page > qtdPages) {
+		return res.status(400).send("Informe uma página válida!");
+	} else if (!page) {
+		page = 1;
+	}
+
+	let lastTweets = posts.slice(tweetsPerPage * (page - 1), tweetsPerPage * page);
+
+	res.status(200).send(lastTweets);
 });
 
 server.get("/tweets/:username", (req, res) => {
-	const username = req.params.username;
-
+	const { username } = req.params;
 	const userTweets = posts.filter((value) => value.username === username);
 
-	res.send(userTweets);
+	if (!userTweets) {
+		return res.status(400).send("Usuário não encontrado!");
+	}
+
+	res.status(200).send(userTweets);
 });
 
-server.listen(5000);
+server.listen(5000, () => console.log("Listening on port 5000"));
