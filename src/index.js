@@ -2,8 +2,8 @@ import express from "express";
 import cors from "cors";
 
 const server = express();
-server.use(express.json());
 server.use(cors());
+server.use(express.json());
 
 const users = [];
 const tweets = [];
@@ -22,17 +22,18 @@ server.post("/sign-up", (req, res) => {
 });
 
 server.post("/tweets", (req, res) => {
-	const { username, tweet } = req.body;
+	const { user: username } = req.headers;
+	const { tweet } = req.body;
+	const picture = users.find((value) => value.username === username);
+	const avatar = picture.avatar;
 
 	if (!username || !tweet) {
 		return res.status(400).send("Todos os campos são obrigatórios!");
 	}
 
-	tweets.push(req.body);
+	tweets.push({ username, tweet });
 
-	const picture = users.find((value) => value.username === username);
-	req.body.avatar = picture.avatar;
-	posts.push(req.body);
+	posts.push({ username, avatar, tweet });
 
 	res.status(201).send("OK");
 });
