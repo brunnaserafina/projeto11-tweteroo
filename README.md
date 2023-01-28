@@ -59,6 +59,9 @@
 ```http
   GET /tweets
 ```
+
+--
+
 ##### RETORNAR OS TWEETS DE UM USUÁRIO:
 
 ```http
